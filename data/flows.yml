@@ -25,6 +25,8 @@ flows:
       - collect: food_item
         description: "The food item or ingredient the user wants to know about."
       - action: action_check_healthiness
+      - action: utter_now_what
+        next: END
 
   explain_recipe:
     description: "Explains why a recommended recipe is a healthy choice, continuing from a recipe recommendation. (Use Case 3)"

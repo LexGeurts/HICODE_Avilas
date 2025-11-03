@@ -9,5 +9,7 @@ pipeline:
 
 policies:
 - name: FlowPolicy
+  # rephrase_action: null
 #  - name: EnterpriseSearchPolicy
+
 assistant_id: 20250827-154803-coal-resin
