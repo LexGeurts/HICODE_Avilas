@@ -1,8 +1,32 @@
 flows:
-  transfer_money:
-    description: Help users send money to friends and family.
+  get_recipe:
+    description: "Helps users find an affordable and healthy recipe based on ingredients they already have. (Use Case 1)"
     steps:
-      - collect: recipient
-      - collect: amount
-        description: the number of US dollars to send
-      - action: utter_transfer_complete
+      - collect: ingredients
+        description: "The list of ingredients the user has at home."
+      - action: action_search_recipe
+      
+      # Ask the yes/no question
+      - collect: wants_explanation
+        description: "Asks if the user wants an explanation for the recipe's healthiness."
+      
+      # branch based on the answer
+        next:
+          - if: slots.wants_explanation
+            then:
+              - link: explain_recipe
+          - else:
+              - action: utter_now_what # The bot asks what to do next...
+                next: END
+
+  check_healthiness:
+    description: "Assesses a food item's healthiness and provides information or alternatives. (Use Case 2)"
+    steps:
+      - collect: food_item
+        description: "The food item or ingredient the user wants to know about."
+      - action: action_check_healthiness
+
+  explain_recipe:
+    description: "Explains why a recommended recipe is a healthy choice, continuing from a recipe recommendation. (Use Case 3)"
+    steps:
+      - action: action_explain_recommendation
