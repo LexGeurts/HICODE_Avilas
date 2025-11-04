@@ -24,6 +24,12 @@ slots:
     # The LLM will extract a food item from the user's text.
     mappings:
       - type: from_llm
+  query_wish:
+    type: text
+    influence_conversation: true
+    # The LLM will extract a recipe preference from the user's text.
+    mappings:
+      - type: from_llm
   wants_explanation:
     type: bool
     mappings:
@@ -43,6 +49,8 @@ responses:
     - text: "What ingredients do you have at home?"
   utter_now_what:
     - text: "What else can I help you with?"
+      metadata:
+        rephrase: False
   utter_handle_out_of_scope:
     - text: "I specialize in recipes and nutrition! I can't help with that. How about we talk about the health benefits of food instead?"
   utter_handle_allergy:
@@ -53,6 +61,9 @@ responses:
     - text: "Would you like to know why this recipe is healthy?"
   utter_ask_food_item:
     - text: "What food item or ingredient would you like to know about?"
+  utter_ask_query_wish:
+    - text: "What wishes do you have regarding a recipe, such as low salt, healthy, vegan, etc?"
+
 
 actions:
   - action_search_recipe
