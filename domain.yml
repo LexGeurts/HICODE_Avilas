@@ -1,35 +1,71 @@
 version: "3.1"
 
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+
+entities:
+  - ingredient
+  - food_item
+
 slots:
-  recipient:
+  ingredients:
     type: text
+    influence_conversation: true
+    # The LLM will extract a list of ingredients from the user's text.
     mappings:
       - type: from_llm
-  amount:
-    type: float
+  food_item:
+    type: text
+    influence_conversation: true
+    # The LLM will extract a food item from the user's text.
     mappings:
       - type: from_llm
+  query_wish:
+    type: text
+    influence_conversation: true
+    # The LLM will extract a recipe preference from the user's text.
+    mappings:
+      - type: from_llm
+  wants_explanation:
+    type: bool
+    mappings:
+      - type: from_llm
+  last_recipe_name:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
 
 responses:
-  utter_ask_recipient:
-    - text: "Who would you like to send money to?"
-
-  utter_ask_amount:
-    - text: "How much money would you like to send?"
-
-  utter_transfer_complete:
-    - text: "All done. {amount} has been sent to {recipient}."
-
-  utter_free_chitchat_response:
-    - text: "placeholder"
+  utter_greet:
+    - text: "Hi! I'm BrainFuel. I can help you find healthy and affordable recipes. You can ask me for a recipe with ingredients you have, or ask if a food is healthy."
+  utter_goodbye:
+    - text: "Goodbye! Happy cooking!"
+  utter_ask_ingredients:
+    - text: "What ingredients do you have at home?"
+  utter_now_what:
+    - text: "What else can I help you with?"
       metadata:
-        rephrase: True
-        rephrase_prompt: |
-          The following is a conversation with an AI assistant built with Rasa.
-          The assistant can help the user transfer money.
-          The assistant is helpful, creative, clever, and very friendly.
-          The user is making small talk, and the assistant should respond, keeping things light.
-          Context / previous conversation with the user:
-          {{history}}
-          {{current_input}}
-          Suggested AI Response:
+        rephrase: False
+  utter_handle_out_of_scope:
+    - text: "I specialize in recipes and nutrition! I can't help with that. How about we talk about the health benefits of food instead?"
+  utter_handle_allergy:
+    - text: "Unfortunately, I don’t provide information on allergies. Please be careful and check the ingredients yourself."
+  utter_handle_unsupported_request:
+    - text: "My purpose is to help you learn about food choices and nutrient values, but I am not a substitute for a personalized dietary plan or medical advice. Please consult a doctor or nutritionist for specific guidance."
+  utter_ask_wants_explanation:
+    - text: "Would you like to know why this recipe is healthy?"
+  utter_ask_food_item:
+    - text: "What food item or ingredient would you like to know about?"
+  utter_ask_query_wish:
+    - text: "What wishes do you have regarding a recipe, such as low salt, healthy, vegan, etc?"
+
+
+actions:
+  - action_search_recipe
+  - action_check_healthiness
+  - action_explain_recommendation
