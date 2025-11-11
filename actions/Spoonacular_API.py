@@ -3,7 +3,7 @@ import random
 import re
 import typing
 
-def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) -> typing.Tuple[str, typing.Optional[str]]:
+def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) -> typing.Tuple[str, typing.Optional[str], typing.Optional[int]]:
     """
     Fetches a recipe from the Spoonacular API based on a list of ingredients
     and an optional query wish (e.g., "healthy").
@@ -16,7 +16,8 @@ def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) ->
     Returns:
         A tuple containing:
         - str: A user-friendly, formatted string containing the recipe or an error message.
-        - Optional[str]: The title of the recipe if found, otherwise None.
+        - Optional[str]: The title of the recipe if found.
+        - Optional[int]: The ID of the recipe if found.
     """
     
     # --- Step 1: Find recipes by ingredients ---
@@ -43,14 +44,14 @@ def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) ->
         recipes = search_response.json()
         
         if not recipes:
-            return f"😢 Sorry, I couldn't find any '{query_wish}' recipes using {', '.join(ingredients)}.", None
+            return f"😢 Sorry, I couldn't find any '{query_wish}' recipes using {', '.join(ingredients)}.", None, None
 
         # Pick a random recipe from the list
         chosen_recipe_summary = random.choice(recipes)
         recipe_id = chosen_recipe_summary.get('id')
 
         if not recipe_id:
-            return "Error: Found recipes, but could not retrieve a valid recipe ID.", None
+            return "Error: Found recipes, but could not retrieve a valid recipe ID.", None, None
 
         # --- Step 2: Get the full details for the chosen recipe ---
         info_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information'
@@ -99,27 +100,98 @@ def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) ->
         else:
             output += "No instructions provided. Check the source URL for details.\n"
             
-        return output, title
+        return output, title, recipe_id
 
     except requests.exceptions.HTTPError as http_err:
         # Handle specific HTTP errors
         if http_err.response.status_code == 401:
             message = ("Error: Authentication failed. Please check your Spoonacular API_KEY.\n"
                        "You can get a free key from https://spoonacular.com/food-api")
-            return message, None
+            return message, None, None
         elif http_err.response.status_code == 402:
             message = (f"Error: API quota exceeded. The Spoonacular free plan is limited.\n"
                        f"Details: {http_err.response.json().get('message')}")
-            return message, None
+            return message, None, None
         else:
             message = f"HTTP error occurred: {http_err} - {http_err.response.text}"
-            return message, None
+            return message, None, None
     except requests.exceptions.RequestException as e:
         # Handle other errors like network issues, timeouts, etc.
-        return f"An error occurred during the API request: {e}", None
+        return f"An error occurred during the API request: {e}", None, None
     except Exception as e:
         # Catch any other unexpected errors
-        return f"An unexpected error occurred: {e}", None
+        return f"An unexpected error occurred: {e}", None, None
+
+def get_recipe_nutrition(recipe_id: int, recipe_title: str, api_key: str) -> str:
+    """
+    Fetches nutritional information and a health score for a given recipe ID.
+
+    Args:
+        recipe_id (int): The Spoonacular ID of the recipe.
+        recipe_title (str): The title of the recipe (for use in the output string).
+        api_key (str): Your personal API key for the Spoonacular API.
+
+    Returns:
+        str: A formatted string explaining the recipe's healthiness and nutritional facts.
+    """
+    try:
+        # --- Step 1: Get Health Score from the information endpoint ---
+        info_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information'
+        info_params = {'apiKey': api_key, 'includeNutrition': False}
+        
+        info_response = requests.get(info_url, params=info_params, timeout=10)
+        info_response.raise_for_status()
+        
+        recipe_info = info_response.json()
+        health_score = recipe_info.get('healthScore', 0)
+
+        # --- Step 2: Get Nutrition Facts from the nutrition widget endpoint ---
+        nutrition_url = f'https://api.spoonacular.com/recipes/{recipe_id}/nutritionWidget.json'
+        nutrition_params = {'apiKey': api_key}
+
+        nutrition_response = requests.get(nutrition_url, params=nutrition_params, timeout=10)
+        nutrition_response.raise_for_status()
+
+        nutrition_data = nutrition_response.json()
+        calories = nutrition_data.get('calories', 'N/A')
+        carbs = nutrition_data.get('carbs', 'N/A')
+        fat = nutrition_data.get('fat', 'N/A')
+        protein = nutrition_data.get('protein', 'N/A')
+
+        # --- Step 3: Build the explanation string ---
+        
+        # Part A: Health Score Explanation
+        health_explanation = f"The recipe '{recipe_title}' has a health score of **{health_score} out of 100**.\n"
+        if health_score >= 75:
+            health_explanation += "This is a very healthy choice! It's well-balanced and likely rich in nutrients."
+        elif health_score >= 50:
+            health_explanation += "This is a reasonably healthy option. It provides a good balance of nutrients."
+        else:
+            health_explanation += "This might not be the healthiest option, but it can be enjoyed in moderation as part of a balanced diet."
+
+        # Part B: Nutritional Facts
+        nutritional_facts = (
+            f"\n\n--- Nutritional Facts (per serving) ---\n"
+            f" * **Calories:** {calories}\n"
+            f" * **Carbohydrates:** {carbs}\n"
+            f" * **Fat:** {fat}\n"
+            f" * **Protein:** {protein}"
+        )
+
+        return f"{health_explanation}{nutritional_facts}"
+
+    except requests.exceptions.HTTPError as http_err:
+        if http_err.response.status_code == 401:
+            return "Error: Authentication failed. Please check your Spoonacular API_KEY."
+        elif http_err.response.status_code == 402:
+            return f"Error: API quota exceeded. Details: {http_err.response.json().get('message')}"
+        else:
+            return f"HTTP error occurred while fetching nutrition: {http_err}"
+    except requests.exceptions.RequestException as e:
+        return f"An error occurred during the API request for nutrition: {e}"
+    except Exception as e:
+        return f"An unexpected error occurred while fetching nutrition: {e}"
+
 
 # --- Example Usage (requires a valid Spoonacular API key) ---
 

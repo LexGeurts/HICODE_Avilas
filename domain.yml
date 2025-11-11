@@ -39,6 +39,13 @@ slots:
     influence_conversation: false
     mappings:
       - type: custom
+  last_recipe_id:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+
 
 responses:
   utter_greet:

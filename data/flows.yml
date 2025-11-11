@@ -35,3 +35,5 @@ flows:
     description: "Explains why a recommended recipe is a healthy choice, continuing from a recipe recommendation. (Use Case 3)"
     steps:
       - action: action_explain_recommendation
+      - action: utter_now_what
+        next: END

@@ -1,6 +1,6 @@
 
 from actions.FDC_API import *
-from actions.Spoonacular_API import find_recipe
+from actions.Spoonacular_API import find_recipe, get_recipe_nutrition
 from typing import Any, Text, Dict, List
 
 from rasa_sdk import Action, Tracker
@@ -42,12 +42,14 @@ class ActionSearchRecipe(Action):
                 return []
 
             # Call the Spoonacular API
-            recipe_output, recipe_title = find_recipe(ingredients, query_wish, SPOONACULAR_API_KEY)
+            recipe_output, recipe_title, recipe_id = find_recipe(ingredients, query_wish, SPOONACULAR_API_KEY)
             
             dispatcher.utter_message(text=recipe_output)
 
             if recipe_title:
-                return [SlotSet("last_recipe_name", recipe_title)]
+                print('yes')
+                return [SlotSet("last_recipe_name", recipe_title), SlotSet("last_recipe_id", recipe_id)]
+                
         else:
             # This case should ideally be handled by the flow, but as a fallback:
             dispatcher.utter_message(text="To find a recipe, please tell me what ingredients you have.")
@@ -92,11 +94,14 @@ class ActionExplainRecommendation(Action):
     ) -> List[Dict[Text, Any]]:
         
         last_recipe = tracker.get_slot("last_recipe_name")
+        last_recipe_id = tracker.get_slot("last_recipe_id")
 
-        # --- API Call Placeholder ---
-        if last_recipe:
-            explanation = f"Alright, the '{last_recipe}' is a great choice because it contains lean protein and lots of vitamins from the vegetables. It's low in fat and gives you sustained energy. Good luck cooking!"
-            dispatcher.utter_message(text=explanation)
+        if last_recipe and last_recipe_id:
+            if SPOONACULAR_API_KEY == "DEMO_KEY":
+                dispatcher.utter_message(text="The SPOONACULAR_API_KEY is not configured. Please set it to use this feature.")
+            else:
+                explanation = get_recipe_nutrition(last_recipe_id, last_recipe, SPOONACULAR_API_KEY)
+                dispatcher.utter_message(text=explanation)
         else:
             dispatcher.utter_message(text="I don't have a recipe in context. Could you ask for a recipe first?")
 
