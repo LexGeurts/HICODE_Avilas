@@ -1,11 +1,15 @@
 flows:
   get_recipe:
+    nlu_trigger:
+      - intent: ask_recipe
     description: "Helps users find an affordable and healthy recipe based on ingredients they already have. (Use Case 1)"
     steps:
       - collect: ingredients
         description: "The ingredients the user has at home."
+        ask_before_filling: false
       - collect: query_wish
         description: "The wishes that the user has regarding a recipe, such as: low salt, healthy, vegan, etc."
+        ask_before_filling: false
       - action: action_search_recipe
       
       # Ask the yes/no question
@@ -22,6 +26,8 @@ flows:
                 next: END
 
   check_healthiness:
+    nlu_trigger: 
+      - intent: ask_healthiness
     description: "Assesses a food item's healthiness and provides information or alternatives. (Use Case 2)"
     run_pattern_completed: false
     steps:
@@ -37,3 +43,26 @@ flows:
       - action: action_explain_recommendation
       - action: utter_now_what
         next: END
+
+
+
+
+# REPAIR FLOWS
+  pattern_handle_allergy:
+      description: "This flow handles user questions about allergies, food allergies, allergic reactions, allergy symptoms, or any allergy-related medical information. The assistant cannot provide allergy advice and must decline these requests."
+      always_include_in_prompt: true
+      # nlu_trigger:
+      #   - intent: inform_allergy
+      # interrupt: true
+      steps:
+        - action: utter_handle_allergy # <-- Responds with the allergy utter
+
+    # This pattern interrupts to handle requests for medical/dietary advice.
+  pattern_handle_medical_advice:
+      description: "Handles user requests for medical or personalized dietary advice."
+      nlu_trigger:
+        - intent: ask_unsupported_medical_advice
+      # interrupt: true
+      steps:
+        - action: utter_handle_unsupported_request
+        - action: utter_now_what                # <-- return to the conversation

@@ -1,0 +1,40 @@
+version: "3.1"
+nlu:
+- intent: ask_recipe
+  examples: |
+    - I need a recipe
+    - What can I make with [chicken](ingredients) and [rice](ingredients)?
+    - I have [onions, garlic, and tomatoes](ingredients)
+    - Find me a recipe
+
+- intent: ask_healthiness
+  examples: |
+    - Are [asparagus](food_item) healthy?
+    - Is [pizza](food_item) unhealthy?
+    - Tell me about [lentils](food_item)
+
+- intent: ask_recipe_explanation
+  examples: |
+    - Why is this healthy?
+    - Tell me more about that recipe
+    - yes (when in context of utter_ask_wants_explanation)
+
+- intent: inform_allergy
+  examples: |
+    - I am allergic to peanuts
+    - I have a gluten allergy
+    - Is this nut-free?
+    - I can't eat shellfish
+    - What about allergies?
+    - I have a food allergy
+    - He is allergic to dairy
+
+- intent: ask_unsupported_medical_advice
+  examples: |
+    - How many calories should I eat to lose weight?
+    - Can you help me lose weight?
+    - I have diabetes, what should I eat?
+    - Give me a personalized dietary plan.
+    - What should I eat for my high blood pressure?
+    - Is this recipe safe for me?
+    - What's the best diet for my medical condition?
