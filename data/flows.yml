@@ -21,9 +21,7 @@ flows:
           - if: slots.wants_explanation
             then:
               - link: explain_recipe
-          - else:
-              - action: utter_now_what # The bot asks what to do next...
-                next: END
+          - else: END
 
   check_healthiness:
     nlu_trigger: 
@@ -34,35 +32,34 @@ flows:
       - collect: food_item
         description: "The food item or ingredient the user wants to know about."
       - action: action_check_healthiness
-      - action: utter_now_what
+      - action: utter_can_do_something_else
         next: END
 
   explain_recipe:
     description: "Explains why a recommended recipe is a healthy choice, continuing from a recipe recommendation. (Use Case 3)"
     steps:
       - action: action_explain_recommendation
-      - action: utter_now_what
+      - action: utter_can_do_something_else
         next: END
 
 
 
 
 # REPAIR FLOWS
-  pattern_handle_allergy:
-      description: "This flow handles user questions about allergies, food allergies, allergic reactions, allergy symptoms, or any allergy-related medical information. The assistant cannot provide allergy advice and must decline these requests."
-      always_include_in_prompt: true
-      # nlu_trigger:
-      #   - intent: inform_allergy
-      # interrupt: true
-      steps:
-        - action: utter_handle_allergy # <-- Responds with the allergy utter
+  handle_allergy:
+    description: "This flow handles user questions about allergies, food allergies, allergic reactions, allergy symptoms, or any allergy-related medical information. The assistant cannot provide allergy advice and must decline these requests."
+    always_include_in_prompt: true
+    nlu_trigger:
+      - intent: inform_allergy
+    # interrupt: true
+    steps:
+      - action: utter_handle_allergy # <-- Responds with the allergy utter
 
     # This pattern interrupts to handle requests for medical/dietary advice.
-  pattern_handle_medical_advice:
-      description: "Handles user requests for medical or personalized dietary advice."
-      nlu_trigger:
-        - intent: ask_unsupported_medical_advice
-      # interrupt: true
-      steps:
-        - action: utter_handle_unsupported_request
-        - action: utter_now_what                # <-- return to the conversation
+  handle_medical_advice:
+    description: "Handles user requests for medical or personalized dietary advice."
+    nlu_trigger:
+      - intent: ask_unsupported_medical_advice
+    # interrupt: true
+    steps:
+      - action: utter_handle_unsupported_request

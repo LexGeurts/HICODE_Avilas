@@ -61,7 +61,7 @@ responses:
     - text: "Goodbye! Happy cooking!"
   utter_ask_ingredients:
     - text: "What ingredients do you have at home?"
-  utter_now_what:
+  utter_can_do_something_else:
     - text: "What else can I help you with?"
       metadata:
         rephrase: False
@@ -70,7 +70,7 @@ responses:
   utter_handle_allergy:
     - text: "Unfortunately, I don’t provide information on allergies. Please be careful and check the ingredients yourself."
       metadata:
-        rephrase: True
+        rephrase: False
   utter_handle_unsupported_request:
     - text: "My purpose is to help you learn about food choices and nutrient values, but I am not a substitute for a personalized dietary plan or medical advice. Please consult a doctor or nutritionist for specific guidance."
   utter_ask_wants_explanation:
