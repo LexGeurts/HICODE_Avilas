@@ -11,6 +11,7 @@ intents:
   - ask_recipe_explanation
   - inform_allergy
   - ask_unsupported_medical_advice
+  - ask_ingredient_pairing
 
 entities:
   - ingredient
@@ -80,7 +81,7 @@ responses:
   utter_ask_query_wish:
     - text: "What wishes do you have regarding a recipe, such as low salt, healthy, vegan, etc?"
   utter_free_chitchat_response:
-    - text: "placeholder" # This text is just a placeholder, the LLM will generate the real response.
+    - text: "placeholder"
       metadata:
         rephrase: True
         rephrase_prompt: |
@@ -93,9 +94,20 @@ responses:
           Context / previous conversation with the user:
           {{history}}
           {{current_input}}
+  utter_resuming_your_flow:
+    - text: "Let me get back to your request."
+      metadata:
+        rephrase: True
+  utter_ingredient_pairing:
+    - text: "Great question! Google has got you covered for most ingredient pairing" # We do not give pairing options
 
 
 actions:
   - action_search_recipe
   - action_check_healthiness
   - action_explain_recommendation
+
+#Handling intentless patterns (This doesnt work because no valid OPENAI key is available)
+# intentless_policy_patterns:
+#   - pattern: "ingredient pairing suggestions"
+#     response: "I can suggest complementary ingredients. For tomato, ingredients like basil, mozzarella, garlic, olive oil, and balsamic vinegar work wonderfully together."

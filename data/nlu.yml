@@ -38,3 +38,14 @@ nlu:
     - What should I eat for my high blood pressure?
     - Is this recipe safe for me?
     - What's the best diet for my medical condition?
+    - how to lose weight?
+
+
+- intent: ask_ingredient_pairing
+  examples: |
+    - What goes well with tomato?
+    - What other ingredient would complement tomato?
+    - What pairs with [basil](ingredient)?
+    - What ingredients complement [garlic](ingredient)?
+    - What should I pair with [chicken](ingredient)?
+    - What other ingredient would complement [tomato](ingredient)?

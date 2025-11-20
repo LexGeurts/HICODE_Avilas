@@ -9,6 +9,11 @@ pipeline:
 
 policies:
 - name: FlowPolicy
+# - name: IntentlessPolicy
+#   llm:
+#       model_group: openai_llm
+#   embeddings:
+#       model_group: openai_embeddings
   # rephrase_action: null
 #  - name: EnterpriseSearchPolicy
 

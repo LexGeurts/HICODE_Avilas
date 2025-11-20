@@ -5,8 +5,10 @@ import typing
 
 def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) -> typing.Tuple[str, typing.Optional[str], typing.Optional[int]]:
     """
-    Fetches a recipe from the Spoonacular API based on a list of ingredients
-    and an optional query wish (e.g., "healthy").
+    Fetches a recipe from the Spoonacular API. 
+    - If ingredients are provided, searches by ingredients.
+    - If only a wish is provided, searches by keyword.
+    - If neither are provided, fetches a random recipe.
 
     Args:
         ingredients (List[str]): A list of ingredient names (e.g., ["chicken", "broccoli"]).
@@ -20,31 +22,84 @@ def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) ->
         - Optional[int]: The ID of the recipe if found.
     """
     
-    # --- Step 1: Find recipes by ingredients ---
-    search_url = 'https://api.spoonacular.com/recipes/findByIngredients'
+    # --- Step 0: Sanitize Inputs ---
+    # Handle cases where inputs might be None, empty lists, or whitespace strings
+    if ingredients is None:
+        ingredients = []
     
-    # Format ingredients for the API: "chicken,+broccoli,+garlic"
-    ingredients_str = ',+'.join(ingredients)
+    # Filter out empty strings or strings with only spaces from the list
+    clean_ingredients = [i.strip() for i in ingredients if i and i.strip()]
     
+    # Clean the wish string (None if it's just whitespace)
+    clean_wish = query_wish.strip() if query_wish and query_wish.strip() else None
+
+    # --- Step 1: Determine Search Strategy ---
     search_params = {
         'apiKey': api_key,
-        'ingredients': ingredients_str,
-        'query': query_wish,           # Pass the "wish" as a general query
-        'number': 10,                  # Get 10 recipes to randomize from
-        'ranking': 1,                  # Maximize used ingredients
-        'ignorePantry': True,          # Ignore common pantry items
-        'instructionsRequired': True   # Only get recipes that have instructions
+        'number': 10  # Get 10 recipes to randomize from
     }
-    
+
     try:
+        # Logic Branching based on available parameters
+        if clean_ingredients:
+            # Scenario A: Ingredients are provided (Use original logic)
+            search_url = 'https://api.spoonacular.com/recipes/findByIngredients'
+            ingredients_str = ',+'.join(clean_ingredients)
+            
+            search_params.update({
+                'ingredients': ingredients_str,
+                'ranking': 1,
+                'ignorePantry': True,
+                'instructionsRequired': True
+            })
+            # Add the wish query if it exists
+            if clean_wish:
+                search_params['query'] = clean_wish
+
+        elif clean_wish:
+            # Scenario B: No ingredients, but a Wish/Query exists
+            search_url = 'https://api.spoonacular.com/recipes/complexSearch'
+            search_params.update({
+                'query': clean_wish,
+                'instructionsRequired': True,
+                'addRecipeInformation': False # We fetch full info in Step 2
+            })
+
+        else:
+            # Scenario C: Both are empty (Get a totally random recipe)
+            search_url = 'https://api.spoonacular.com/recipes/random'
+            search_params.update({
+                'number': 1 # Random endpoint just needs to return 1 valid one
+            })
+
         # --- First API Call: Search for recipes ---
         search_response = requests.get(search_url, params=search_params, timeout=10)
         search_response.raise_for_status() # Check for HTTP errors
         
-        recipes = search_response.json()
+        data = search_response.json()
         
+        # --- Normalize the Response ---
+        # Different endpoints return different JSON structures. We normalize them into a list.
+        recipes = []
+        if isinstance(data, list):
+            # findByIngredients returns a direct list
+            recipes = data
+        elif 'results' in data:
+            # complexSearch returns {'results': [...]}
+            recipes = data['results']
+        elif 'recipes' in data:
+            # random returns {'recipes': [...]}
+            recipes = data['recipes']
+
+        # Check if list is empty
         if not recipes:
-            return f"😢 Sorry, I couldn't find any '{query_wish}' recipes using {', '.join(ingredients)}.", None, None
+            # Create a custom error message based on what was searched
+            if clean_wish:
+                return f"😢 Sorry, I couldn't find any recipes matching '{clean_wish}'.", None, None
+            elif clean_ingredients:
+                return f"😢 Sorry, I couldn't find any recipes using {', '.join(clean_ingredients)}.", None, None
+            else:
+                return "😢 Sorry, I couldn't find any recipes at the moment.", None, None
 
         # Pick a random recipe from the list
         chosen_recipe_summary = random.choice(recipes)
@@ -54,10 +109,11 @@ def find_recipe(ingredients: typing.List[str], query_wish: str, api_key: str) ->
             return "Error: Found recipes, but could not retrieve a valid recipe ID.", None, None
 
         # --- Step 2: Get the full details for the chosen recipe ---
+        # (This part of the code remains intact as requested)
         info_url = f'https://api.spoonacular.com/recipes/{recipe_id}/information'
         info_params = {
-            'apiKey': api_key,           # Use the provided api_key (FIXED from original code)
-            'includeNutrition': False  # Save API quota points
+            'apiKey': api_key,           # Use the provided api_key
+            'includeNutrition': False    # Save API quota points
         }
 
         # --- Second API Call: Get recipe details ---
@@ -191,22 +247,3 @@ def get_recipe_nutrition(recipe_id: int, recipe_title: str, api_key: str) -> str
         return f"An error occurred during the API request for nutrition: {e}"
     except Exception as e:
         return f"An unexpected error occurred while fetching nutrition: {e}"
-
-
-# --- Example Usage (requires a valid Spoonacular API key) ---
-
-# if __name__ == "__main__":
-#     # IMPORTANT: Replace with your actual API key
-#     MY_SPOONACULAR_KEY = "5f491dd56fb148d7b417dc3d1a4c4830"
-
-#     my_ingredients = ["chicken", "broccoli", "garlic"]
-#     my_wish = "healthy stir-fry"
-
-#     recipe_string = find_recipe(my_ingredients, my_wish, MY_SPOONACULAR_KEY)
-#     print(recipe_string)
-
-#     print("\n" + "="*30 + "\n")
-
-#     # Example of a failed search
-#     failed_search = find_recipe(["xyzabc", "qwert"], "anything", MY_SPOONACULAR_KEY)
-#     print(failed_search)

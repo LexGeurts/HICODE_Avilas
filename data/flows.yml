@@ -32,14 +32,12 @@ flows:
       - collect: food_item
         description: "The food item or ingredient the user wants to know about."
       - action: action_check_healthiness
-      - action: utter_can_do_something_else
         next: END
 
   explain_recipe:
     description: "Explains why a recommended recipe is a healthy choice, continuing from a recipe recommendation. (Use Case 3)"
     steps:
       - action: action_explain_recommendation
-      - action: utter_can_do_something_else
         next: END
 
 
@@ -54,12 +52,35 @@ flows:
     # interrupt: true
     steps:
       - action: utter_handle_allergy # <-- Responds with the allergy utter
+      - action: action_continue_interrupted_flow
+        next: END
+    
 
     # This pattern interrupts to handle requests for medical/dietary advice.
   handle_medical_advice:
     description: "Handles user requests for medical or personalized dietary advice."
+    always_include_in_prompt: true
     nlu_trigger:
       - intent: ask_unsupported_medical_advice
     # interrupt: true
     steps:
       - action: utter_handle_unsupported_request
+
+  ingredient_pairing:
+    description: "Provides suggestions for ingredient pairings"
+    nlu_trigger:
+      - intent: ask_ingredient_pairing
+    steps:
+      - action: utter_ingredient_pairing
+        next: END
+
+
+
+
+  # Custom continuation flow, overwrites RASA default behavior of asking confirmation after interrupt
+  pattern_continue_interrupted:
+    description: Conversation repair flow for managing when users switch between different flows
+    name: pattern continue interrupted
+    steps:
+      - action: action_continue_interrupted_flow
+        next: END
