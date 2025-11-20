@@ -1,0 +1,14 @@
+test_cases:
+  - test_case: ask if an ingredient is healthy
+    steps:
+      - user: "I tomato a healthy choice?"
+        assertions:
+          - slot_was_set:
+              - name: "food_item"
+                value: "tomato"
+          - flow_started: "check_healthiness"
+
+
+
+
+# Testing docs: https://rasa.com/docs/pro/testing/evaluating-assistant
