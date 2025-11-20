@@ -4,8 +4,10 @@ flows:
     name: pattern chitchat
     steps:
       - action: utter_free_chitchat_response
-  pattern_search:
-    description: Flow for handling knowledge-based questions
-    name: pattern search
-    steps:
-      - action: utter_free_chitchat_response
+ 
+
+
+
+
+# @jesse vd hoven, dit is de documentatie voor het overwriten van PATTERNS:
+# https://rasa.com/docs/reference/primitives/patterns

@@ -6,6 +6,12 @@ intents:
   - goodbye
   - affirm
   - deny
+  - ask_recipe
+  - ask_healthiness
+  - ask_recipe_explanation
+  - inform_allergy
+  - ask_unsupported_medical_advice
+  - ask_ingredient_pairing
 
 entities:
   - ingredient
@@ -14,6 +20,7 @@ entities:
 slots:
   ingredients:
     type: text
+    initial_value: " " # Empty
     influence_conversation: true
     # The LLM will extract a list of ingredients from the user's text.
     mappings:
@@ -26,6 +33,7 @@ slots:
       - type: from_llm
   query_wish:
     type: text
+    initial_value: " " # Emptys
     influence_conversation: true
     # The LLM will extract a recipe preference from the user's text.
     mappings:
@@ -39,6 +47,13 @@ slots:
     influence_conversation: false
     mappings:
       - type: custom
+  last_recipe_id:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+
 
 responses:
   utter_greet:
@@ -47,7 +62,7 @@ responses:
     - text: "Goodbye! Happy cooking!"
   utter_ask_ingredients:
     - text: "What ingredients do you have at home?"
-  utter_now_what:
+  utter_can_do_something_else:
     - text: "What else can I help you with?"
       metadata:
         rephrase: False
@@ -55,6 +70,8 @@ responses:
     - text: "I specialize in recipes and nutrition! I can't help with that. How about we talk about the health benefits of food instead?"
   utter_handle_allergy:
     - text: "Unfortunately, I don’t provide information on allergies. Please be careful and check the ingredients yourself."
+      metadata:
+        rephrase: False
   utter_handle_unsupported_request:
     - text: "My purpose is to help you learn about food choices and nutrient values, but I am not a substitute for a personalized dietary plan or medical advice. Please consult a doctor or nutritionist for specific guidance."
   utter_ask_wants_explanation:
@@ -63,9 +80,34 @@ responses:
     - text: "What food item or ingredient would you like to know about?"
   utter_ask_query_wish:
     - text: "What wishes do you have regarding a recipe, such as low salt, healthy, vegan, etc?"
+  utter_free_chitchat_response:
+    - text: "placeholder"
+      metadata:
+        rephrase: True
+        rephrase_prompt: |
+          The following is a conversation with an AI assistant named 'BrainFuel'.
+          The assistant's purpose is to help students find healthy and affordable food, get recipes, and assess a food item's healthiness.
+          The assistant's persona is knowledgeable, supportive, friendly, helpful, and encouraging, but also formal.
+          It is information-rich and aims for "info spearfishing" (question > answer).
+          The assistant MUST NOT use first-person ("I", "my").
+          The user is making small talk, and the assistant should respond politely and concisely, keeping things on topic if possible, but without being dismissive.
+          Context / previous conversation with the user:
+          {{history}}
+          {{current_input}}
+  utter_resuming_your_flow:
+    - text: "Let me get back to your request."
+      metadata:
+        rephrase: True
+  utter_ingredient_pairing:
+    - text: "Great question! Google has got you covered for most ingredient pairing" # We do not give pairing options
 
 
 actions:
   - action_search_recipe
   - action_check_healthiness
   - action_explain_recommendation
+
+#Handling intentless patterns (This doesnt work because no valid OPENAI key is available)
+# intentless_policy_patterns:
+#   - pattern: "ingredient pairing suggestions"
+#     response: "I can suggest complementary ingredients. For tomato, ingredients like basil, mozzarella, garlic, olive oil, and balsamic vinegar work wonderfully together."
