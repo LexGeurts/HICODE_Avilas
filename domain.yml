@@ -9,7 +9,7 @@ intents:
   - ask_recipe
   - ask_healthiness
   - ask_recipe_explanation
-  - inform_allergy
+#  - inform_allergy
   - ask_unsupported_medical_advice
   - ask_ingredient_pairing
 
