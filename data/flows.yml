@@ -14,14 +14,18 @@ flows:
       
       # Ask the yes/no question
       - collect: wants_explanation
-        description: "Asks if the user wants an explanation for the recipe's healthiness."
+        description: "Asks if the user wants an explanation for the recipe's healthiness. If the user says something unrelated, the answer is 'False'"
       
       # branch based on the answer
         next:
+          - if: slots.last_recipe_id is null
+            then: END
           - if: slots.wants_explanation
             then:
               - link: explain_recipe
-          - else: END
+          - else: 
+            - action: utter_ask_wants_explanation_recipe
+              next: END
 
   check_healthiness:
     nlu_trigger: 
@@ -32,10 +36,14 @@ flows:
       - collect: food_item
         description: "The food item or ingredient the user wants to know about."
       - action: action_check_healthiness
+      - action: utter_can_do_something_else
         next: END
 
   explain_recipe:
-    description: "Explains why a recommended recipe is a healthy choice, continuing from a recipe recommendation. (Use Case 3)"
+    nlu_trigger:
+      - intent: ask_recipe_explanation
+    description: "Explains why a recommended recipe is a healthy choice, possibly from a recipe recommendation. (Use Case 3)"
+    if: slots.last_recipe_name is not null
     steps:
       - action: action_explain_recommendation
         next: END
@@ -77,10 +85,4 @@ flows:
 
 
 
-  # Custom continuation flow, overwrites RASA default behavior of asking confirmation after interrupt
-  pattern_continue_interrupted:
-    description: Conversation repair flow for managing when users switch between different flows
-    name: pattern continue interrupted
-    steps:
-      - action: action_continue_interrupted_flow
-        next: END
+

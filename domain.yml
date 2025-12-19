@@ -40,8 +40,15 @@ slots:
       - type: from_llm
   wants_explanation:
     type: bool
+    initial_value: False
+    influence_conversation: true
     mappings:
       - type: from_llm
+  error:
+    type: bool
+    influence_conversation: false
+    mappings:
+      - type: custom
   last_recipe_name:
     type: text
     influence_conversation: false
@@ -74,8 +81,8 @@ responses:
         rephrase: False
   utter_handle_unsupported_request:
     - text: "My purpose is to help you learn about food choices and nutrient values, but I am not a substitute for a personalized dietary plan or medical advice. Please consult a doctor or nutritionist for specific guidance."
-  utter_ask_wants_explanation:
-    - text: "Would you like to know why this recipe is healthy?"
+  utter_ask_wants_explanation_recipe:
+    - text: "You can also ask me why this recipe is healthy!"
   utter_ask_food_item:
     - text: "What food item or ingredient would you like to know about?"
   utter_ask_query_wish:
@@ -106,6 +113,7 @@ actions:
   - action_search_recipe
   - action_check_healthiness
   - action_explain_recommendation
+  - action_check_interrupted_flow
 
 #Handling intentless patterns (This doesnt work because no valid OPENAI key is available)
 # intentless_policy_patterns:

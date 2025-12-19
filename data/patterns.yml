@@ -4,9 +4,40 @@ flows:
     name: pattern chitchat
     steps:
       - action: utter_free_chitchat_response
+
+
+  pattern_repeat_bot_messages:
+    description: Only repeat bot messages when explicitly requested with phrases like "repeat that", "say that again", or "what did you say"
+    name: pattern repeat bot messages
+    steps:
+      - action: action_repeat_bot_messages
  
 
 
+
+  pattern_continue_interrupted:
+    description: Cancel specific flows on interruption
+    name: pattern continue interrupted
+    steps:
+      - noop: true
+        next:
+          - if: context.interrupted_flow_names contains "get_recipe"
+            then:
+              - action: action_cancel_interrupted_flows
+                next: END
+          - else:
+              # - action: action_cancel_interrupted_flows
+              #   next: END
+              - collect: continue_interrupted_flow_confirmation
+                description: "If the user wants to continue the interrupted flow, fill this slot with true. If the user does not want to continue the interrupted flow, fill this slot with false."
+                next:
+                  - if: slots.continue_interrupted_flow_confirmation
+                    then:
+                      - action: action_continue_interrupted_flow
+                        next: END
+                  - else:
+                      - action: action_cancel_interrupted_flows
+                        next: END
 
 
 # @jesse vd hoven, dit is de documentatie voor het overwriten van PATTERNS:
