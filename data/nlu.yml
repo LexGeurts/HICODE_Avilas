@@ -6,6 +6,7 @@ nlu:
     - What can I make with [chicken](ingredients) and [rice](ingredients)?
     - I have [onions, garlic, and tomatoes](ingredients)
     - Find me a recipe
+    - Find me a [salad] (query_wish) recipe 
 
 - intent: ask_healthiness
   examples: |
@@ -49,3 +50,16 @@ nlu:
     - What ingredients complement [garlic](ingredient)?
     - What should I pair with [chicken](ingredient)?
     - What other ingredient would complement [tomato](ingredient)?
+
+- intent: ask_recipe_explanation
+  examples: |
+    - why is this recipe healthy?
+    - explain why this is good for me
+    - what makes this recipe a healthy choice?
+    - tell me more about this recipe
+    - why did you recommend this?
+    - what are the health benefits of this recipe?
+    - can you explain the nutrition?
+    - why is this good?
+    - what's healthy about it?
+    - break down the health benefits

@@ -42,10 +42,12 @@ class ActionSearchRecipe(Action):
             if recipe_title:
                 print('yes')
                 return [SlotSet("last_recipe_name", recipe_title), SlotSet("last_recipe_id", recipe_id)]
+            else:
+                return [SlotSet("last_recipe_name", None), SlotSet("last_recipe_id", None)]
                 
         else:
             # This case should ideally be handled by the flow, but as a fallback:
-            dispatcher.utter_message(text="To find a recipe, please tell me what ingredients you have.")
+            dispatcher.utter_message(text="To find a recipe, please ask me.")
 
         return []
 
@@ -99,3 +101,63 @@ class ActionExplainRecommendation(Action):
             dispatcher.utter_message(text="I don't have a recipe in context. Could you ask for a recipe first?")
 
         return []
+
+
+
+# # actions.py
+# from rasa_sdk import Action
+# import logging
+
+# logger = logging.getLogger(__name__)
+
+# class ActionDebugContext(Action):
+#     def name(self):
+#         return "action_debug_context"
+    
+#     def run(self, dispatcher, tracker, domain):
+#         # Get the current dialogue stack frame
+#         stack = tracker.get_stack()
+        
+#         if stack:
+#             current_frame = stack[-1]
+#             frame_info = current_frame.get("frame_info", {})
+            
+#             # Log context properties
+#             logger.info(f"Interrupted flow names: {frame_info.get('interrupted_flow_names')}")
+#             logger.info(f"Interrupted flow options: {frame_info.get('interrupted_flow_options')}")
+#             logger.info(f"Multiple flows interrupted: {frame_info.get('multiple_flows_interrupted')}")
+            
+#             # Optionally send to user for debugging
+#             dispatcher.utter_message(
+#                 text=f"Debug: {frame_info.get('interrupted_flow_names')}"
+#             )
+        
+#         return []
+    
+
+# from rasa_sdk import Action, Tracker
+# from rasa_sdk.executor import CollectingDispatcher
+# from rasa_sdk.events import FollowupAction
+# import logging
+
+# logger = logging.getLogger(__name__)
+
+# class ActionCheckInterruptedFlow(Action):
+#     def name(self):
+#         return "action_check_interrupted_flow"
+    
+#     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: dict):
+#         stack = tracker.get_stack()
+        
+#         if stack:
+#             frame_info = stack[-1].get("frame_info", {})
+#             interrupted_flow_ids = frame_info.get('interrupted_flow_ids', [])
+            
+#             logger.info(f"Interrupted flow IDs: {interrupted_flow_ids}")
+            
+#             # Check if get_recipe is in the interrupted flows
+#             if 'get_recipe' in interrupted_flow_ids:
+#                 return [FollowupAction("action_cancel_interrupted_flows")]
+        
+#         # Continue with normal flow
+#         return []
