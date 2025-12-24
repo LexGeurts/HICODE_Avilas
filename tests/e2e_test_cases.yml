@@ -8,6 +8,153 @@ test_cases:
                 value: "tomato"
           - flow_started: "check_healthiness"
 
+  - test_case: ask if cucumbers are healthy
+    steps:
+      - user: "Are cucumbers healthy?"
+        assertions:
+          
+          - slot_was_set:
+              - name: "food_item"
+                value: "cucumbers" 
+          - flow_started: "check_healthiness"
+
+  - test_case: ask if pizza is unhealthy
+    steps:
+      - user: "Is pizza unhealthy?"
+        assertions:
+          - slot_was_set:
+              - name: "food_item"
+                value: "pizza"
+          - flow_started: "check_healthiness"
+
+  - test_case: ask about lentils healthiness
+    steps:
+      - user: "Tell me if lentils are healthy"
+        assertions:
+          - slot_was_set:
+              - name: "food_item"
+                value: "lentils"
+          - flow_started: "check_healthiness"
+
+  - test_case: ask if salmon is good for you
+    steps:
+      - user: "Is salmon good for you?"
+        assertions:
+          - slot_was_set:
+              - name: "food_item"
+                value: "salmon"
+          - flow_started: "check_healthiness"
+
+  - test_case: recipe with chicken
+    steps:
+      - user: "Find me a recipe with chicken"
+        assertions:
+          - slot_was_set:
+              - name: "ingredients"
+                value: "chicken"
+          - flow_started: "get_recipe"
+
+  - test_case: recipe with rice and beans
+    steps:
+      - user: "What can I cook with rice and beans?"
+        assertions:
+          - flow_started: "get_recipe"
+
+  - test_case: vegan dinner with tofu
+    steps:
+      - user: "I need a vegan dinner with tofu"
+        assertions:
+          - slot_was_set:
+              - name: "ingredients"
+                value: "tofu"
+              - name: "query_wish"
+                value: "vegan"
+          - flow_started: "get_recipe"
+
+  - test_case: gluten free dessert using oats
+    steps:
+      - user: "Any gluten free dessert using oats?"
+        assertions:
+          - slot_was_set:
+              - name: "ingredients"
+                value: "oats"
+              - name: "query_wish"
+                value: "gluten free"
+          - flow_started: "get_recipe"
+
+  - test_case: recipe using potatoes and eggs
+    steps:
+      - user: "Give me a recipe using potatoes and eggs"
+        assertions:
+          - flow_started: "get_recipe"
+
+  - test_case: quick lunch with tuna
+    steps:
+      - user: "Quick lunch recipe with tuna?"
+        assertions:
+          - slot_was_set:
+              - name: "ingredients"
+                value: "tuna"
+          - flow_started: "get_recipe"
+
+  - test_case: soup with carrots and celery
+    steps:
+      - user: "Can you make a soup with carrots and celery?"
+        assertions:
+          - flow_started: "get_recipe"
+
+  - test_case: budget dinner with pasta
+    steps:
+      - user: "Budget-friendly dinner with pasta"
+        assertions:
+          - slot_was_set:
+              - name: "ingredients"
+                value: "pasta"
+          - flow_started: "get_recipe"
+
+  - test_case: peanut allergy
+    steps:
+      - user: "I am allergic to peanuts"
+        assertions:
+          - flow_started: "handle_allergy"
+
+  - test_case: dairy allergy
+    steps:
+      - user: "He has a dairy allergy"
+        assertions:
+          - flow_started: "handle_allergy"
+
+  - test_case: asking if nut free
+    steps:
+      - user: "Is this nut free?"
+        assertions:
+          - flow_started: "handle_allergy"
+
+  - test_case: calories to lose weight
+    steps:
+      - user: "How many calories should I eat to lose weight?"
+        assertions:
+          - flow_started: "handle_medical_advice"
+
+  - test_case: diet for hypertension
+    steps:
+      - user: "What's the best diet for high blood pressure?"
+        assertions:
+          - flow_started: "handle_medical_advice"
+
+  - test_case: ingredient pairing tomato
+    steps:
+      - user: "What goes well with tomato?"
+        assertions:
+          - flow_started: "ingredient_pairing"
+
+  - test_case: ingredient pairing chicken
+    steps:
+      - user: "What should I pair with chicken?"
+        assertions:
+          - flow_started: "ingredient_pairing"
+
+
 
 
 
