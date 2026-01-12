@@ -231,10 +231,10 @@ def get_recipe_nutrition(recipe_id: int, recipe_title: str, api_key: str) -> str
             f" * **Calories:** {calories}\n"
             f" * **Carbohydrates:** {carbs}\n"
             f" * **Fat:** {fat}\n"
-            f" * **Protein:** {protein}"
+            f" * **Protein:** {protein}\n"
         )
 
-        calc_explanation = f"The Spoonacular health score is a nutrient-density rating from 0 to 100 that rewards fiber and vitamins while penalizing sodium, sugar, and saturated fats, meaning most recipes fall below 50 because they contain common levels of salt or fat that the strict algorithm considers less than perfectly nutritious.\n"
+        calc_explanation = f"\nThe Spoonacular health score is a nutrient-density rating from 0 to 100 that rewards fiber and vitamins while penalizing sodium, sugar, and saturated fats, meaning most recipes fall below 50 because they contain common levels of salt or fat that the strict algorithm considers less than perfectly nutritious.\n"
 
         return f"{health_explanation}{nutritional_facts}{calc_explanation}"
 
