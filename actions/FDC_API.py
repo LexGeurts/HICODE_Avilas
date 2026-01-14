@@ -24,7 +24,7 @@ def get_ingredient_health_info(ingredient: str, api_key: str) -> str:
         "query": ingredient,
         "api_key": api_key,
         "pageSize": 1,  # We only need the top result
-        "dataType": "Foundation,SR Legacy,Survey (FNDDS)"
+        "dataType": ["Foundation", "SR Legacy", "Survey (FNDDS)"]
     }
 
     try:
