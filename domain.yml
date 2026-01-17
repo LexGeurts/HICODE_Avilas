@@ -106,6 +106,7 @@ actions:
   - action_search_recipe
   - action_check_healthiness
   - action_explain_recommendation
+  - action_vibevoice_speak
 
 #Handling intentless patterns (This doesnt work because no valid OPENAI key is available)
 # intentless_policy_patterns:

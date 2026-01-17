@@ -2,21 +2,13 @@ flows:
   get_recipe:
     nlu_trigger:
       - intent: ask_recipe
-    description: "Helps users find an affordable and healthy recipe based on ingredients they already have. (Use Case 1)"
+    description: "Helps users find a recipe based on ingredients."
     steps:
       - collect: ingredients
-        description: "The ingredients the user has at home."
-        ask_before_filling: false
       - collect: query_wish
-        description: "The wishes that the user has regarding a recipe, such as: low salt, healthy, vegan, etc."
-        ask_before_filling: false
       - action: action_search_recipe
-      
-      # Ask the yes/no question
+      - action: action_vibevoice_speak
       - collect: wants_explanation
-        description: "Asks if the user wants an explanation for the recipe's healthiness."
-      
-      # branch based on the answer
         next:
           - if: slots.wants_explanation
             then:
@@ -24,63 +16,28 @@ flows:
           - else: END
 
   check_healthiness:
-    nlu_trigger: 
+    nlu_trigger:
       - intent: ask_healthiness
-    description: "Assesses a food item's healthiness and provides information or alternatives. (Use Case 2)"
-    run_pattern_completed: false
+    description: "Assesses if a specific food item is healthy."
     steps:
       - collect: food_item
-        description: "The food item or ingredient the user wants to know about."
       - action: action_check_healthiness
+      - action: action_vibevoice_speak
         next: END
 
   explain_recipe:
-    description: "Explains why a recommended recipe is a healthy choice, continuing from a recipe recommendation. (Use Case 3)"
+    description: "Explains the nutritional benefits of the recommended recipe."
     steps:
       - action: action_explain_recommendation
+      - action: action_vibevoice_speak
         next: END
 
-
-
-
-# REPAIR FLOWS
   handle_allergy:
-    description: "This flow handles user questions about allergies, food allergies, allergic reactions, allergy symptoms, or any allergy-related medical information. The assistant cannot provide allergy advice and must decline these requests."
-    always_include_in_prompt: true
     nlu_trigger:
       - intent: inform_allergy
-    # interrupt: true
+    description: "Handles user concerns or information about food allergies."
     steps:
-      - action: utter_handle_allergy # <-- Responds with the allergy utter
-      - action: action_continue_interrupted_flow
-        next: END
-    
-
-    # This pattern interrupts to handle requests for medical/dietary advice.
-  handle_medical_advice:
-    description: "Handles user requests for medical or personalized dietary advice."
-    always_include_in_prompt: true
-    nlu_trigger:
-      - intent: ask_unsupported_medical_advice
-    # interrupt: true
-    steps:
-      - action: utter_handle_unsupported_request
-
-  ingredient_pairing:
-    description: "Provides suggestions for ingredient pairings"
-    nlu_trigger:
-      - intent: ask_ingredient_pairing
-    steps:
-      - action: utter_ingredient_pairing
-        next: END
-
-
-
-
-  # Custom continuation flow, overwrites RASA default behavior of asking confirmation after interrupt
-  pattern_continue_interrupted:
-    description: Conversation repair flow for managing when users switch between different flows
-    name: pattern continue interrupted
-    steps:
+      - action: utter_handle_allergy
+      - action: action_vibevoice_speak
       - action: action_continue_interrupted_flow
         next: END
