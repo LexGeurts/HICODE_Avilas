@@ -1,6 +1,5 @@
 version: "3.1"
 
-
 intents:
   - greet
   - goodbye
@@ -9,7 +8,7 @@ intents:
   - ask_recipe
   - ask_healthiness
   - ask_recipe_explanation
-#  - inform_allergy
+  # - inform_allergy
   - ask_unsupported_medical_advice
   - ask_ingredient_pairing
 
@@ -22,20 +21,17 @@ slots:
     type: text
     initial_value: " " # Empty
     influence_conversation: true
-    # The LLM will extract a list of ingredients from the user's text.
     mappings:
       - type: from_llm
   food_item:
     type: text
     influence_conversation: true
-    # The LLM will extract a food item from the user's text.
     mappings:
       - type: from_llm
   query_wish:
     type: text
-    initial_value: " " # Emptys
+    initial_value: " " # Empty
     influence_conversation: true
-    # The LLM will extract a recipe preference from the user's text.
     mappings:
       - type: from_llm
   wants_explanation:
@@ -52,8 +48,6 @@ slots:
     influence_conversation: false
     mappings:
       - type: custom
-
-
 
 responses:
   utter_greet:
@@ -99,16 +93,9 @@ responses:
       metadata:
         rephrase: True
   utter_ingredient_pairing:
-    - text: "Great question! Google has got you covered for most ingredient pairing" # We do not give pairing options
-
+    - text: "Great question! Google has got you covered for most ingredient pairing"
 
 actions:
   - action_search_recipe
   - action_check_healthiness
   - action_explain_recommendation
-  - action_vibevoice_speak
-
-#Handling intentless patterns (This doesnt work because no valid OPENAI key is available)
-# intentless_policy_patterns:
-#   - pattern: "ingredient pairing suggestions"
-#     response: "I can suggest complementary ingredients. For tomato, ingredients like basil, mozzarella, garlic, olive oil, and balsamic vinegar work wonderfully together."

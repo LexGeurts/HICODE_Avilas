@@ -7,7 +7,6 @@ flows:
       - collect: ingredients
       - collect: query_wish
       - action: action_search_recipe
-      - action: action_vibevoice_speak
       - collect: wants_explanation
         next:
           - if: slots.wants_explanation
@@ -22,14 +21,12 @@ flows:
     steps:
       - collect: food_item
       - action: action_check_healthiness
-      - action: action_vibevoice_speak
         next: END
 
   explain_recipe:
     description: "Explains the nutritional benefits of the recommended recipe."
     steps:
       - action: action_explain_recommendation
-      - action: action_vibevoice_speak
         next: END
 
   handle_allergy:
@@ -38,6 +35,5 @@ flows:
     description: "Handles user concerns or information about food allergies."
     steps:
       - action: utter_handle_allergy
-      - action: action_vibevoice_speak
       - action: action_continue_interrupted_flow
         next: END
