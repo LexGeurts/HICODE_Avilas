@@ -63,3 +63,35 @@ This script will:
    Open your browser and navigate to `<your-codespace-id-xxxxx>-5000.app.github.dev` if you are running the app in Github codespaces, or `http://localhost:5000` if you are running it locally.
 
 ---
+
+## VibeVoice Installation (Local MacBook M3)
+Note: The VibeVoice integration is located in the Frontend_Speech_lang branch.
+To set up VibeVoice locally on a MacBook (M3/Apple Silicon), please follow these steps:
+
+Switch to the VibeVoice branch Fetch the latest changes and checkout the specific branch:
+```bash
+git fetch origin
+git checkout Frontend_Speech_lang 
+```
+Set up the Environment Ensure your virtual environment is active:
+
+```bash
+source .venv/bin/activate
+```
+Install VibeVoice Core Install the VibeVoice Realtime (0.5b) engine from the official repository:
+
+
+### Clone the repository
+```bash
+git clone [https://github.com/microsoft/VibeVoice.git](https://github.com/microsoft/VibeVoice.git)
+```
+
+### Enter the directory
+```bash
+cd VibeVoice
+```
+
+### Install in editable mode
+```bash
+pip install -e .
+```
